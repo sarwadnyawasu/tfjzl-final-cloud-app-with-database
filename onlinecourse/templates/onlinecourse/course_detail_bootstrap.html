@@ -1,56 +1,300 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     {% load static %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }} - Course Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .course-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 60px 0;
+        }
+        .course-image {
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 300px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .lesson-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .lesson-number {
+            background: #0f3460;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .enroll-btn {
+            background: #e94560;
+            border: none;
+            padding: 12px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            transition: background 0.3s ease;
+        }
+        .enroll-btn:hover {
+            background: #c73652;
+        }
+        .exam-btn {
+            background: #0f3460;
+            border: none;
+            padding: 12px 40px;
+            font-size: 16px;
+            border-radius: 50px;
+            transition: background 0.3s ease;
+        }
+        .exam-btn:hover {
+            background: #0a2540;
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            border-left: 5px solid #e94560;
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .badge-grade {
+            background: #e94560;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+    </style>
 </head>
-
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
-                        </div>
-                    </form>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
 
-    <!-- Page content -->
-    <div class="container-fluid">
-            <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
-                    </div>
-                {% endfor %}
-            </div>
-            <!-- Course detail template changes go here -->
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1a1a2e;">
+    <a class="navbar-brand font-weight-bold" href="/">
+        <i class="fas fa-graduation-cap mr-2"></i>OnlineCourse
+    </a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <span class="nav-link text-light">Welcome, {{ user.username }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/onlinecourse/logout">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="/onlinecourse/login">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/onlinecourse/register">Register</a>
+            </li>
+            {% endif %}
+        </ul>
     </div>
+</nav>
+
+<!-- Course Header -->
+<div class="course-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h1 class="display-4 font-weight-bold mb-3">{{ course.name }}</h1>
+                <p class="lead mb-4">{{ course.description }}</p>
+                <p class="mb-2">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    Published: {{ course.pub_date }}
+                </p>
+                <p class="mb-4">
+                    <i class="fas fa-users mr-2"></i>
+                    {{ course.total_enrollment }} learners enrolled
+                </p>
+
+                {% if user.is_authenticated %}
+                    {% if course.is_enrolled %}
+                        <div class="alert alert-success d-inline-block" role="alert">
+                            <i class="fas fa-check-circle mr-2"></i>You are enrolled in this course!
+                        </div>
+                    {% else %}
+                        <form method="post" action="/onlinecourse/{{ course.id }}/enroll/">
+                            {% csrf_token %}
+                            <button type="submit" class="btn enroll-btn btn-lg text-white">
+                                <i class="fas fa-plus-circle mr-2"></i>Enroll Now
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <a href="/onlinecourse/login" class="btn enroll-btn btn-lg text-white">
+                        Login to Enroll
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-md-5 mt-4 mt-md-0">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" class="course-image img-fluid" alt="{{ course.name }}">
+                {% else %}
+                    <div class="bg-secondary rounded" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-book-open fa-5x text-light"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Lessons Section -->
+        <div class="col-lg-8">
+            <h2 class="section-title">Course Lessons</h2>
+
+            {% if course.lesson_set.all %}
+                {% for lesson in course.lesson_set.all %}
+                <div class="card lesson-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="lesson-number mr-3 flex-shrink-0">
+                                {{ lesson.order }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title font-weight-bold mb-2">{{ lesson.title }}</h5>
+                                <p class="card-text text-muted">{{ lesson.content }}</p>
+
+                                <!-- Questions within lesson -->
+                                {% if lesson.question_set.all %}
+                                <div class="question-card mt-3">
+                                    <h6 class="font-weight-bold mb-3">
+                                        <i class="fas fa-question-circle mr-2 text-primary"></i>
+                                        Exam Questions
+                                    </h6>
+                                    {% for question in lesson.question_set.all %}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-2 font-weight-medium">{{ forloop.counter }}. {{ question.content }}</p>
+                                            <span class="badge-grade ml-2">{{ question.grade }} pt</span>
+                                        </div>
+                                        {% for choice in question.choice_set.all %}
+                                        <div class="form-check ml-3">
+                                            <input class="form-check-input" type="checkbox"
+                                                   id="choice_{{ choice.id }}"
+                                                   name="choice"
+                                                   value="{{ choice.id }}">
+                                            <label class="form-check-label" for="choice_{{ choice.id }}">
+                                                {{ choice.content }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-2"></i>No lessons available yet.
+                </div>
+            {% endif %}
+
+            <!-- Take Exam Button -->
+            {% if course.is_enrolled %}
+            <div class="text-center mt-4 mb-5">
+                <form method="post" action="/onlinecourse/{{ course.id }}/submission/">
+                    {% csrf_token %}
+                    {% for lesson in course.lesson_set.all %}
+                        {% for question in lesson.question_set.all %}
+                            {% for choice in question.choice_set.all %}
+                            <!-- choices are collected via JavaScript -->
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                    <button type="submit" class="btn exam-btn btn-lg text-white">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Exam
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="font-weight-bold mb-3">
+                        <i class="fas fa-chalkboard-teacher mr-2 text-primary"></i>Instructors
+                    </h5>
+                    {% for instructor in course.instructors.all %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-3"
+                             style="width:40px; height:40px; font-weight:bold;">
+                            {{ instructor.user.username|first|upper }}
+                        </div>
+                        <div>
+                            <p class="mb-0 font-weight-bold">{{ instructor.user.username }}</p>
+                            <small class="text-muted">
+                                {% if instructor.full_time %}Full-time{% else %}Part-time{% endif %} Instructor
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="font-weight-bold mb-3">
+                        <i class="fas fa-info-circle mr-2 text-primary"></i>Course Info
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-book mr-2 text-muted"></i>
+                            <strong>Lessons:</strong> {{ course.lesson_set.count }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-users mr-2 text-muted"></i>
+                            <strong>Enrolled:</strong> {{ course.total_enrollment }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar mr-2 text-muted"></i>
+                            <strong>Published:</strong> {{ course.pub_date }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
